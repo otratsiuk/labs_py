@@ -43,8 +43,10 @@ while more:
     name_length = len(name)
     surname_length = len(surname)
     P = prime_number(name_length)
-    print('P = ' + str(P))
     Q = prime_number(surname_length)
+    if Q == P:
+        Q = prime_number(P + 1)
+    print('P = ' + str(P))
     print('Q = ' + str(Q))
     N = (P * Q)
     L = (P - 1) * (Q - 1)
@@ -71,3 +73,4 @@ while more:
         more = 0
     else:
         more = 1
+        print('\n')
