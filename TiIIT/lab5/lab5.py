@@ -1,5 +1,6 @@
 from numpy import random
 from numpy.lib import scimath
+import matplotlib.pyplot as plt
 
 from typing import List, Callable
 
@@ -23,10 +24,10 @@ def make_positive(x):
     return x
 
 
-test_probability = (random.exponential(3.5))
-infectiousness = (random.normal(20, 2.5))
+test_probability = make_positive(random.exponential(3.5))
+infectiousness = make_positive(random.normal(20, 2.5))
 infected_start_number = random.randint(5, 10)
-treatment_eff = (uniform_distribution(10, 2.5))
+treatment_eff = make_positive(uniform_distribution(10, 2.5))
 average_age = make_positive(random.normal(25, 5.5))
 first_day_infected_num = random.randint(5, 10)
 
@@ -43,16 +44,15 @@ class Agent:
 
     def set_health(self):
         self.health = make_positive(random.normal(6, 0.5))
+        self.treatment_probability = 0.01
         if self.health < 2:
             self.treatment_probability = 0.1
-        else:
-            self.treatment_probability = 0.01
 
     def set_death_rate(self, age, health, treatment_eff):
         self.death_rate = make_positive(age*0.09 + random.normal(
             5 - 0.35*health - 0.3 * treatment_eff, make_positive(2 - 0.3 * health - 0.15*treatment_eff)))
 
-    def set_status():
+    def set_status(self):
         test_chance = random.uniform(0, 100)
         treatment_chance = random.random()
         death_chance = random.uniform(0, 100)
@@ -98,33 +98,49 @@ agents = []
 print('first day infected ' + str(first_day_infected_num))
 for i in range(first_day_infected_num):
     agents.append(create_agent())
-    print('social_contacts ' + str(agents[i].social_contacts))
 
 
-MAX_DAYS = 5
+MAX_DAYS = 15
 current_day = 1
+
+
+def infected_by_agent_count(social_contacts):
+    infected_by_agent_count = 0
+    infected_by_agent_count = infectiousness * social_contacts / 100
+    return infected_by_agent_count
 
 
 def next_day(day: int, agents: List[Agent], callback: Callable):
     callback(day, agents)
-
     if day == MAX_DAYS:
         return
 
     infected_count = 0
     infected_by_agent = 0
     for agent in agents:
-        infected_by_agent = infectiousness * \
-            agent.social_contacts / 100
+        infected_by_agent = infected_by_agent_count(agent.social_contacts)
         infected_count = infected_count + infected_by_agent
 
     new_agents = [create_agent() for _ in range(int(round(infected_count)))]
     next_day(day + 1, agents + new_agents, callback)
 
 
+infected = []
+days = []
+
+
 def callback_func(day, agents):
     print('day = ' + str(day))
     print('agents infected ' + str(len(agents)))
+    days.append(day)
+    infected.append(len(agents))
 
 
 next_day(current_day, agents, callback_func)
+
+
+plt.title('infected growth chart')
+plt.plot(days, infected)
+plt.xlabel('day')
+plt.ylabel('infected')
+plt.show()
