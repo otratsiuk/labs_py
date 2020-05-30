@@ -1,5 +1,6 @@
-from numpy import random
+from numpy import random, mean, std
 from numpy.lib import scimath
+
 import matplotlib.pyplot as plt
 
 from typing import List, Callable
@@ -31,6 +32,7 @@ treatment_eff = make_positive(uniform_distribution(10, 2.5))
 average_age = make_positive(random.normal(25, 5.5))
 first_day_infected_num = random.randint(5, 10)
 
+
 print('infectiousness: ' + str(infectiousness))
 
 
@@ -40,7 +42,7 @@ class Agent:
         self.status = 'infected'
 
     def set_m(self):
-        self.m = uniform_distribution(0, 50)
+        self.m = make_positive(uniform_distribution(0, 50))
 
     def set_health(self):
         self.health = make_positive(random.normal(6, 0.5))
@@ -81,7 +83,7 @@ class Agent:
             25 - 2.0*health - 0.2*treatment_eff, 2 - 0.1*health)))
 
 
-def create_agent() -> Agent():
+def create_agent() -> Agent:
     agent = Agent()
     agent.set_m()
     agent.set_sc(agent.m)
@@ -94,13 +96,15 @@ def create_agent() -> Agent():
     return agent
 
 
-agents = []
-print('first day infected ' + str(first_day_infected_num))
-for i in range(first_day_infected_num):
-    agents.append(create_agent())
+def create_agents(count: int) -> List[Agent]:
+    return [create_agent() for _ in range(count)]
 
 
-MAX_DAYS = 15
+first_day_infected = create_agents(first_day_infected_num)
+print('first day infected: ' + str(first_day_infected_num))
+
+
+MAX_DAYS = 12
 current_day = 1
 
 
@@ -117,11 +121,14 @@ def next_day(day: int, agents: List[Agent], callback: Callable):
 
     infected_count = 0
     infected_by_agent = 0
+
     for agent in agents:
         infected_by_agent = infected_by_agent_count(agent.social_contacts)
         infected_count = infected_count + infected_by_agent
 
-    new_agents = [create_agent() for _ in range(int(round(infected_count)))]
+    callback(day, agents)
+
+    new_agents = create_agents(int(round(infected_count)))
     next_day(day + 1, agents + new_agents, callback)
 
 
@@ -130,13 +137,11 @@ days = []
 
 
 def callback_func(day, agents):
-    print('day = ' + str(day))
-    print('agents infected ' + str(len(agents)))
     days.append(day)
     infected.append(len(agents))
 
 
-next_day(current_day, agents, callback_func)
+next_day(current_day, first_day_infected, callback_func)
 
 
 plt.title('infected growth chart')
@@ -144,3 +149,20 @@ plt.plot(days, infected)
 plt.xlabel('day')
 plt.ylabel('infected')
 plt.show()
+
+
+simulation = []
+MAX_DAYS = 10
+current_day = 1
+
+for i in range(5):
+    next_day(current_day, first_day_infected,
+             lambda day, agents: simulation.append(len(agents)) if day == MAX_DAYS else None)
+
+
+expectation = mean(simulation)
+standart_deviation = std(simulation)
+
+
+print('expectation on 10th day: ' + str(expectation))
+print('standart deviation on 10th day: ' + str(standart_deviation))
