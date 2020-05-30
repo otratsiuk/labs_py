@@ -8,21 +8,21 @@
 
   
 ### Результаты имитации:  
-![1.1.](TiIIT/lab5/results/1.1.jpg)  
-![simulation1.1.](TiIIT/lab5/results/simulation1.1.png)  
+![1.1.](results/1.1.jpg)  
+![simulation1.1.](results/simulation1.1.png)  
   
-![1.2.](TiIIT/lab5/results/1.2.jpg)  
-![simulation1.2.](TiIIT/lab5/results/simulation1.2.png)  
+![1.2.](results/1.2.jpg)  
+![simulation1.2.](results/simulation1.2.png)  
   
   
 ### Результаты имитации после изменения параметров:  
 Заразность(I): параметр с уменьшен на △1 = 5  
 Средний возраст населения(AP): параметр m увеличен на △2 = 10  
 Эффективность лечения(M): параметр с увеличен на ​△3​ = 15  
-![2.1.](TiIIT/lab5/results/2.1.jpg)  
-![simulation2.1.](TiIIT/lab5/results/simulation2.1.png)  
+![2.1.](results/2.1.jpg)  
+![simulation2.1.](results/simulation2.1.png)  
   
-![2.2.](TiIIT/lab5/results/2.2.jpg)  
-![simulation2.2.](TiIIT/lab5/results/simulation2.2.png)  
+![2.2.](results/2.2.jpg)  
+![simulation2.2.](results/simulation2.2.png)  
 
 
