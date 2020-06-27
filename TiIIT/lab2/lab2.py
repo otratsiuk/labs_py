@@ -32,11 +32,6 @@ def delta(current, previous):
     return bool(math.fabs(current - previous) > precision)
 
 
-previous_x = X
-previous_y = Y
-previous_z = Z
-
-
 def max():
     previous_x = X
     previous_y = Y
