@@ -1,7 +1,4 @@
-import math
-import matplotlib.pyplot as plt
 import numpy as np
-import csv
 
 class Dataset:
     dt_splitter = 2 / 3
@@ -13,19 +10,20 @@ class Dataset:
         self.training_dt_size = round(self.dt_size * self.dt_splitter)
         self.validation_dt_size = self.dt_size - self.training_dt_size
 
-        self.x = np.linspace(-10, 10, self.dt_size)
+        self.t = np.linspace(-30, 30, self.dt_size)
         self.y = []
-        for x in self.x:
-            self.y.append(self.func(x))    
+        for t in self.t:
+            self.y.append(self.func(t))    
 
     def training_sample(self):
-        return self.x[: self.training_dt_size], self.y[: self.training_dt_size]
+        return self.y[: self.training_dt_size]
 
     def validation_sample(self):
-        return self.x[self.training_dt_size :], self.y[self.training_dt_size :]    
+        return self.y[self.training_dt_size :]
 
-    #returns a list of samples formed by sliding window
-    #takes set as list and splits it to samples of k elements
+    def time_points(self):
+        return self.t[self.training_dt_size :]      
+
     def sliding_window_samples(self, set, k):
         samples = []
         for i in range(len(set) - k):
@@ -34,28 +32,5 @@ class Dataset:
                 temp.append(set[i + j])
             samples.append(temp)
 
-        return samples            
-
-    def sliding_window_e(self, set, k):
-        return set[k :]
-
-    def update_samples(self, k):
-        training_set_x, training_set_e = self.training_sample()
-        x_samples = self.sliding_window_samples(training_set_x, k)
-        e_samples = self.sliding_window_e(training_set_e, k)
-
-        data = x_samples
-        for i in range(len(data)):
-            data[i].append(e_samples[i])
-
-        shuffled_data = np.asarray(data)
-        np.random.shuffle(shuffled_data)
-
-        e = shuffled_data[:, k:]
-        e =  e.flatten() 
-
-        return list(shuffled_data[:, :k]), e  
-            
-
-
-
+        return samples, set[k :]            
+        
