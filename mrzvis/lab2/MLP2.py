@@ -7,7 +7,7 @@ from Dataset import Dataset
 
 class MLP:
     alpha = 0.001
-    Emin  = 0.5
+    Emin  = 0.1
     dataset_size = 4000
 
     def __init__(self, input_layer_size, hidden_layer_size):
@@ -51,6 +51,13 @@ class MLP:
 
         return err * 0.5    
 
+    def plotter(self, t, y, e, title):
+        plt.title(title)
+        plt.plot(t[: len(y)], y, "red", label='forecast')
+        plt.plot(t[: len(y)], e, "blue", label='original')
+        plt.legend()
+        plt.show()
+
     def learning(self):
         dataset = Dataset(self.dataset_size, self.func)
         E = self.Emin
@@ -74,24 +81,29 @@ class MLP:
                 if E < self.Emin:
                     break
 
-    def prognosticate(self):
+        y = []
+        t = dataset.training_time_points()
+        for i in x_windows:
+            X = np.asarray(i)
+            y.append(self.feedforward(X))
+
+        self.plotter(t, y, e, 'Training interval')
+
+    def forecast(self):
         y = []
 
         dataset = Dataset(self.dataset_size, self.func)
-        validation_set_x = dataset.validation_sample()
+        forecasting_set_x = dataset.forecasting_sample()
 
-        x_windows, e = dataset.sliding_window_samples(validation_set_x, self.input_layer_size)
-        t = dataset.time_points()
+        x_windows, e = dataset.sliding_window_samples(forecasting_set_x, self.input_layer_size)
+        t = dataset.forecasting_time_points()
 
         for i in x_windows:
             X = np.asarray(i)
             y.append(self.feedforward(X))
 
-        plt.plot(t[: len(y)], y, "red")
-        plt.plot(t[: len(y)], e, "green")
-        plt.show()
+        self.plotter(t, y, e, 'Forecasting interval')
 
-
-x = MLP(8, 3)
-x.learning()
-x.prognosticate()
+mlp = MLP(8, 3)
+mlp.learning()
+mlp.forecast()
